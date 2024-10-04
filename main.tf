@@ -46,7 +46,7 @@ data "aws_security_group" "existing" {
   name   = "default"  # This will fetch the default security group of the VPC
 }
 # Lambda Function
-resource "aws_lambda_function" "my_lambdanew45" {
+resource "aws_lambda_function" "new_lambda" {
   function_name = "new_lambda_function_${formatdate("YYYYMMDDhhmmss", timestamp())}"
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.8" 
@@ -61,5 +61,6 @@ resource "aws_lambda_function" "my_lambdanew45" {
 
    lifecycle {
     create_before_destroy = true
+    prevent_destroy = true
 }
 }
