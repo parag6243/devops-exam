@@ -46,7 +46,7 @@ data "aws_security_group" "existing" {
   name   = "default"  # This will fetch the default security group of the VPC
 }
 # Lambda Function
-resource "aws_lambda_function" "my_lambda66" {
+resource "aws_lambda_function" "my_lambda93" {
   function_name = "new_lambda_function_${formatdate("YYYYMMDDhhmmss", timestamp())}"
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.8" 
