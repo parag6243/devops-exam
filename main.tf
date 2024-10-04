@@ -52,5 +52,5 @@ resource "aws_lambda_function" "my_lambda" {
     security_group_ids = [aws_security_group.lambda_sg.id]
   }
  # Path to your Lambda package
-  source_code_hash = filebase64sha256("lambda/lambda_function.zip")
+  source_code_hash = filebase64sha256("lambda/lambda_functionnew.zip")
 }
