@@ -53,4 +53,5 @@ resource "aws_lambda_function" "my_lambda" {
   }
  # Path to your Lambda package
   source_code_hash = filebase64sha256("lambda/lambda_functionnew.zip")
+   filename         = "lambda/lambda_functionnew.zip" 
 }
