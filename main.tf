@@ -38,12 +38,12 @@ resource "aws_security_group" "lambda_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  }
+  }s
 }
 
 # Lambda Function
-resource "aws_lambda_function" "my_lambda2" {
-  function_name = "my_lambda_function2"
+resource "aws_lambda_function" "my_lambda66" {
+  function_name = "my_lambda_function66"
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.8" 
   role          = data.aws_iam_role.lambda.arn
