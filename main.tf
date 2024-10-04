@@ -1,9 +1,12 @@
+provider "aws" {
+  region = "ap-south-1"
+}
 
 # Private Subnet
 resource "aws_subnet" "private_subnet" {
   vpc_id                  = data.aws_vpc.vpc.id
   cidr_block              = var.private_subnet_cidr
-  availability_zone       = "ap-south-1a"  # Change to another AZ if needed
+  availability_zone       = "ap-south-1a"  # Change as needed
   map_public_ip_on_launch = false
 }
 
@@ -12,7 +15,7 @@ resource "aws_route_table" "private_route_table" {
   vpc_id = data.aws_vpc.vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = data.aws_nat_gateway.nat.id
   }
 }
@@ -31,7 +34,7 @@ resource "aws_security_group" "lambda_sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"  # All protocols
-    cidr_blocks = ["10.0.0.0/16"]  # Modify according to your needs
+    cidr_blocks = ["10.0.0.0/16"]  # Modify as needed
   }
 
   egress {
@@ -45,13 +48,13 @@ resource "aws_security_group" "lambda_sg" {
 # Lambda Function
 resource "aws_lambda_function" "my_lambda" {
   function_name = "my_lambda_function"
-  handler       = "index.handler"
-  runtime       = "nodejs14.x"  # Change as needed
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.8"  # Change as needed
   role          = data.aws_iam_role.lambda.arn
   vpc_config {
     subnet_ids         = [aws_subnet.private_subnet.id]
     security_group_ids = [aws_security_group.lambda_sg.id]
   }
-
-  source_code_hash = filebase64sha256("path/to/your/lambda/package.zip")  # Path to your Lambda package
+ # Path to your Lambda package
+  source_code_hash = filebase64sha256("lambda/lambda_function.zip")
 }
