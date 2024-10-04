@@ -23,28 +23,25 @@ resource "aws_route_table_association" "private_subnet_association" {
 }
 
 # Security Group for Lambda
-#resource "aws_security_group" "lambda_sg" {
-#  vpc_id = data.aws_vpc.vpc.id
-
-#  ingress {
-#    from_port   = 0
-#    to_port     = 0
-#    protocol    = "-1"  # All protocols
-#    cidr_blocks = ["10.0.0.0/16"]  # Modify as needed
-#  }
-
-#  egress {
-#    from_port   = 0
-#    to_port     = 0
-#    protocol    = "-1"
-#    cidr_blocks = ["0.0.0.0/0"]
-#  }
-#}
-
-data "aws_security_group" "existing" {
+resource "aws_security_group" "lambda_sg" {
   vpc_id = data.aws_vpc.vpc.id
-  name   = "default"  # This will fetch the default security group of the VPC
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # All protocols
+    cidr_blocks = ["10.0.0.0/16"]  # Modify as needed
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
+
+
 # Lambda Function
 resource "aws_lambda_function" "new_lambda" {
   function_name = "new_lambda_function_${formatdate("YYYYMMDDhhmmss", timestamp())}"
@@ -61,6 +58,5 @@ resource "aws_lambda_function" "new_lambda" {
 
    lifecycle {
     create_before_destroy = true
-    prevent_destroy = true
 }
 }
