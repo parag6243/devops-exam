@@ -43,7 +43,7 @@ resource "aws_security_group" "lambda_sg" {
 
 # Lambda Function
 resource "aws_lambda_function" "my_lambda66" {
-  function_name = "my_lambda_function66"
+  function_name = "new_lambda_function_${formatdate("YYYYMMDDhhmmss", timestamp())}"
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.8" 
   role          = data.aws_iam_role.lambda.arn
@@ -54,4 +54,8 @@ resource "aws_lambda_function" "my_lambda66" {
  # Path to your Lambda package
   source_code_hash = filebase64sha256("lambda/lambda_functionnew.zip")
    filename         = "lambda/lambda_functionnew.zip" 
+
+   lifecycle {
+    create_before_destroy = true
+}
 }
