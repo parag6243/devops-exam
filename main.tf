@@ -50,7 +50,7 @@ resource "aws_lambda_function" "new_lambda" {
   role          = data.aws_iam_role.lambda.arn
   vpc_config {
     subnet_ids         = [aws_subnet.private_subnet.id]
-    security_group_ids = [data.aws_security_group.existing.id]
+    security_group_ids = [aws_security_group.lambda_sg.id]
   }
  # Path to your Lambda package
   source_code_hash = filebase64sha256("lambda/lambda_functionnew.zip")
