@@ -33,6 +33,15 @@ pipeline{
                 sh"terraform apply --auto-approve"
             }
         }
+
+
+        stage("TF Apply"){
+            steps{
+                echo "Executing Terraform Apply"
+                sh"terraform apply --auto-approve"
+            }
+        }
+        
        stage('Invoke Lambda') {
     steps {
         script {
