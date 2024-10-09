@@ -62,3 +62,4 @@ resource "aws_lambda_function" "new_lambda" {
     }
    
 }
+}
