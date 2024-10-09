@@ -42,16 +42,17 @@ pipeline{
             }
         }
 
-        stage('Get Subnet ID') {
-            steps {
-                script {
-                    // Get the subnet ID from Terraform output
-                    def output = sh(script: 'terraform output -json', returnStdout: true)
-                    def json = readJSON(text: output)
-                    env.SUBNET_ID = json.private_subnet.value
-                }
-            }
+ stage('Get Subnet ID') {
+    steps {
+        script {
+            // Get the subnet ID from Terraform output
+            def output = sh(script: 'terraform output -json', returnStdout: true).trim()
+            def json = readJSON text: output
+            env.SUBNET_ID = json.private_subnet_id.value
+            echo "Subnet ID: ${env.SUBNET_ID}"
         }
+    }
+}
         stage('Invoke Lambda') {
             steps {
                 script {
