@@ -1,49 +1,83 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage("TF Init"){
-            steps{
-                echo "Executing Terraform Init"
-                 sh"terraform init" 
-            }
-        }
-        stage("TF Validate"){
-            steps{
-                echo "Validating Terraform Code"
-                sh"terraform validate"
-            }
-        }
-        stage("TF Plan"){
-            steps{
-                echo "Executing Terraform Plan"
-                sh"terraform plan"
-            }
-        }
-        stage('Install Dependencies') {
+    environment {
+        AWS_REGION = 'ap-south-1'
+        SUBNET_ID = ''
+    }
+    stages {
+        stage("TF Init") {
             steps {
                 script {
-                    // Install the requests library
-                    sh 'pip install requests'
+                    echo "Executing Terraform Init"
+                    sh 'terraform init'
                 }
             }
         }
-        stage("TF Apply"){
-            steps{
-                echo "Executing Terraform Apply"
-                sh"terraform apply --auto-approve"
+        stage("TF Validate") {
+            steps {
+                script {
+                    echo "Validating Terraform Code"
+                    sh 'terraform validate'
+                }
             }
         }
-       stage('Invoke Lambda') {
-    steps {
-        script {
-            sh 'aws lambda invoke --function-name new_lambda_function37 --log-type Tail output.txt'
-            
-
-            
-           
-
+        stage("TF Plan") {
+            steps {
+                script {
+                    echo "Executing Terraform Plan"
+                    sh 'terraform plan'
+                }
+            }
+        }
+        stage("TF Apply") {
+            steps {
+                script {
+                    echo "Executing Terraform Apply"
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+        stage('Get Subnet ID') {
+            steps {
+                script {
+                    echo "Retrieving Subnet ID"
+                    def output = sh(script: 'terraform output -json', returnStdout: true).trim()
+                    def json = readJSON text: output
+                    env.SUBNET_ID = json.private_subnet_id.value
+                    echo "Subnet ID: ${env.SUBNET_ID}"
+                }
+            }
+        }
+        stage('Invoke Lambda') {
+            steps {
+                script {
+                    echo "Invoking AWS Lambda"
+                    def response = sh(
+                        script: """
+                        aws lambda invoke \
+                            --function-name new_lambda_function \
+                            --payload '{"SUBNET_ID":"${env.SUBNET_ID}"}' \
+                            --log-type Tail \
+                            --region ${AWS_REGION} \
+                            response.json
+                        """,
+                        returnStdout: true
+                    ).trim()
+                    
+                    def jsonResponse = readJSON text: response
+                    echo "Lambda Response: ${jsonResponse.LogResult}"
+                    
+                    // Decode base64 response
+                    def decodedResponse = new String(jsonResponse.LogResult.decodeBase64())
+                    echo "Decoded Response: ${decodedResponse}"
+                }
+            }
         }
     }
-}
+    post {
+        always {
+            echo 'Cleaning up workspace'
+            deleteDir()
+        }
     }
 }
