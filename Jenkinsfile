@@ -55,7 +55,7 @@ pipeline {
                     def response = sh(
                         script: """
                         aws lambda invoke \
-                            --function-name new_lambda_function39 \
+                            --function-name new_lambda_function41 \
                             --payload '{"SUBNET_ID":"${env.SUBNET_ID}"}' \
                             --log-type Tail \
                             --region ${AWS_REGION} \
