@@ -56,5 +56,9 @@ resource "aws_lambda_function" "new_lambda" {
   
    filename         = "lambda/lambda_function.zip" 
 
+   environment {
+    variables = {
+      SUBNET_ID = aws_subnet.private_subnet.id
+    }
    
 }
