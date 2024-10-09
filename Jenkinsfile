@@ -33,19 +33,10 @@ pipeline{
                 sh"terraform apply --auto-approve"
             }
         }
-
-
-        stage("TF Apply"){
-            steps{
-                echo "Executing Terraform Apply"
-                sh"terraform apply --auto-approve"
-            }
-        }
-        
        stage('Invoke Lambda') {
     steps {
         script {
-            sh 'aws lambda invoke --function-name new_lambda_function35 --log-type Tail output.txt'
+            sh 'aws lambda invoke --function-name new_lambda_function37 --log-type Tail output.txt'
             
 
             
