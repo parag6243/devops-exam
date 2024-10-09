@@ -1,71 +1,47 @@
 pipeline{
     agent any
-    environment {
-        AWS_REGION = 'ap-south-1'
-        SUBNET_ID = ''
-    }
     stages{
         stage("TF Init"){
             steps{
-                script{
-                        echo "Executing Terraform Init"
-                        sh 'terraform init'
-                    }
-                
+                echo "Executing Terraform Init"
+                 sh"terraform init" 
             }
         }
         stage("TF Validate"){
             steps{
-                script{
-                        echo "Validating Terraform Code"
-                        sh 'terraform validate'
-                    }
-                
+                echo "Validating Terraform Code"
+                sh"terraform validate"
             }
         }
         stage("TF Plan"){
             steps{
-                script{
-                        echo "Executing Terraform Plan"
-                        sh 'terraform plan'
-                    }
-                
+                echo "Executing Terraform Plan"
+                sh"terraform plan"
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install the requests library
+                    sh 'pip install requests'
+                }
             }
         }
         stage("TF Apply"){
             steps{
-                script{
-                        echo "Executing terraform apply"
-                        sh 'terraform apply -auto-approve'
-                    }
-                
+                echo "Executing Terraform Apply"
+                sh"terraform apply --auto-approve"
             }
         }
-
- stage('Get Subnet ID') {
+       stage('Invoke Lambda') {
     steps {
         script {
-            // Get the subnet ID from Terraform output
-            def output = sh(script: 'terraform output -json', returnStdout: true).trim()
-            def json = readJSON text: output
-            env.SUBNET_ID = json.private_subnet_id.value
-            echo "Subnet ID: ${env.SUBNET_ID}"
+            def result = sh(script: 'aws lambda invoke --function-name my_lambda_function_new --log-type Tail output.txt', returnStdout: true)
+            echo "Lambda output: ${result}"
+           
+
         }
     }
 }
-        stage('Invoke Lambda') {
-            steps {
-                script {
-                    echo "Invoking your AWS Lambda"
-                    sh "aws lambda invoke --function-name my_lambda_function --log-type Tail response.json"
-                    def response = readFile('response.json')
-                    def jsonResponse = readJSON(text: response)
-                    echo "Lambda Response: ${jsonResponse.LogResult}"
-                    // Decode base64 response
-                    def decodedResponse = new String(jsonResponse.LogResult.decodeBase64())
-                    echo "Decoded Response: ${decodedResponse}"
-                }
-            }
-        }
     }
 }
