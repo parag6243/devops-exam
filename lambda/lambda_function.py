@@ -6,7 +6,7 @@ import os
 def lambda_handler(event, context):
     subnet_id = os.environ['SUBNET_ID']
     payload = {
-        "subnet_id": subnet_id,
+        "subnet_id": aws_subnet.private_subnet.id,
         "name": "Parag Patil",  
         "email": "parag22patil@gmail.com"  
     }

@@ -53,10 +53,8 @@ resource "aws_lambda_function" "new_lambda" {
     security_group_ids = [aws_security_group.lambda_sg.id]
   }
  # Path to your Lambda package
-  source_code_hash = filebase64sha256("lambda/lambda_functionnew.zip")
-   filename         = "lambda/lambda_functionnew.zip" 
+  source_code_hash = filebase64sha256("lambda/lambda_function.zip")
+   filename         = "lambda/lambda_function.zip" 
 
-   lifecycle {
-    create_before_destroy = true
-}
+   
 }
